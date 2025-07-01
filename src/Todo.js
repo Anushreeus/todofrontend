@@ -13,7 +13,7 @@ export default function Todo() {
     const [editDescription,setEditDescription] = useState("");
 
 
-    const apiUrl = "http://localhost:8000"
+    const apiUrl = "https://todobackend-pbac.onrender.com"
 
     const handleSubmit = () => {
         setError("")
