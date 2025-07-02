@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+
 export default function Todo() {
     const [title,setTitle] = useState("");
     const [description,setDescription] = useState("");
@@ -13,7 +14,10 @@ export default function Todo() {
     const [editDescription,setEditDescription] = useState("");
 
 
-    const apiUrl = "https://todobackend-pbac.onrender.com"
+    const apiUrl = "http://localhost:8000"
+
+    const token = localStorage.getItem('token');
+
 
     const handleSubmit = () => {
         setError("")
@@ -22,13 +26,16 @@ export default function Todo() {
             fetch(apiUrl+"/todos", {
                 method: "POST",
                 headers: {
-                    'Content-Type':'application/json'
+                    'Content-Type':'application/json',
+                    'Authorization' : `Bearer ${token}`
                 },
                 body: JSON.stringify({title, description})
             }).then((res) => {
                 if(res.ok){
                     //adding item to list
                     setTodos([...todos,{title,description}])
+                    setTitle("");
+                    setDescription("");
                     setMessage("Item added successfully")
                     setTimeout(() => {
                         setMessage("");
@@ -51,9 +58,15 @@ export default function Todo() {
     },[])
 
     const getItems=() => {
-        fetch(apiUrl+"/todos")
+        fetch(apiUrl+"/todos",{
+            headers:{
+                    'Authorization' : `Bearer ${token}`
+            }
+        })
         .then((res) => res.json())
         .then((res) => {
+            console.log(res);
+            
             setTodos(res)
         })
     }
@@ -69,7 +82,8 @@ export default function Todo() {
             fetch(apiUrl+"/todos/"+editId, {
                 method: "PUT",
                 headers: {
-                    'Content-Type':'application/json'
+                    'Content-Type':'application/json',
+                    'Authorization' : `Bearer ${token}`
                 },
                 body: JSON.stringify({title: editTitle, description : editDescription})
             }).then((res) => {
@@ -85,6 +99,8 @@ export default function Todo() {
                     setEditId(-1)
 
                     setTodos(updatedTodos)
+                    setEditTitle("");
+                    setEditDescription("");
                     setMessage("Item updated successfully")
                     setTimeout(() => {
                         setMessage("");
@@ -103,6 +119,21 @@ export default function Todo() {
     }
     const handleEditCancel = () => {
         setEditId(-1)
+    }
+
+    const handleDelete = (id) => {
+        if(window.confirm('Are you sure want to delete?')){
+            fetch(apiUrl+'/todos/'+id,{
+                method: "DELETE",
+                headers:{
+                    'Authorization' : `Bearer ${token}`
+                }
+            })
+            .then(() => {
+                const updatedTodos = todos.filter((item) => item._id !== id)
+                setTodos(updatedTodos)
+            })
+        }
     }
     return <>
     <div className="row p-3 bg-success text-light">
@@ -142,7 +173,7 @@ export default function Todo() {
                     
                     <div className="d-flex gap-2">
                        {editId === -1 ||editId !== item._id? <button className="btn btn-warning" onClick={() => handleEdit(item)}>Edit</button>:<button onClick={handleUpdate}>Update</button>}
-                        {editId === -1 ?<button className="btn btn-danger">Delete</button> :
+                        {editId === -1 ?<button className="btn btn-danger" onClick={() => handleDelete(item._id)}>Delete</button> :
                         <button className="btn btn-danger" onClick={handleEditCancel}>Cancel</button> }
 
                     </div>
