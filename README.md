@@ -45,7 +45,7 @@ project/
 ---
 
 ## Architecture Diagram
-[https://github.com/Anushreeus/todofrontend/blob/8a260c1a3e5f60fa07761f99ba882923b3f60be9/Architecture%20Diagram.png]
+![Alt Text](https://github.com/Anushreeus/todofrontend/blob/8a260c1a3e5f60fa07761f99ba882923b3f60be9/Architecture%20Diagram.png)
 
 ````
 ## Features
